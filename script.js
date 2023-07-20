@@ -16,30 +16,83 @@ const getUserInput = ()=> {
 }
 
 const handleExpression = (exprStack) => {
+    let tempExprStack = [...exprStack];
+
     const getIndexOfOperator = (exprStack, ommitOperator) =>{
         let tempExprStack = [...exprStack];
         let iOperator;
         if(ommitOperator){
             tempExprStack.includes(ommitOperator) ? tempExprStack.splice(tempExprStack.indexOf(ommitOperator), 1) : console.warn(`There is no such operator as: ${ommitOperator}`);
         }
-        if(tempExprStack.includes('**')) iOperator = tempExprStack.indexOf('**');       //look for the current operator
-        else if(tempExprStack.includes('*')) iOperator = tempExprStack.indexOf('*');
-        else if(tempExprStack.includes('/')) iOperator = tempExprStack.indexOf('/');
-        else if(tempExprStack.includes('-')) iOperator = tempExprStack.indexOf('-');
-        else if(tempExprStack.includes('+')) iOperator = tempExprStack.indexOf('+');
+
+        //Look for the highest operator
+        if(tempExprStack.includes('**')) {
+            iOperator = tempExprStack.indexOf('**');
+
+            for(i in tempExprStack){ //Use for in on array to get the index, look for the Current operator in the highest
+                if(tempExprStack[i] === '**') {
+                    iOperator = i;
+                    break;
+                }
+            }
+        }
+        else if(tempExprStack.includes('*')) {
+            iOperator = tempExprStack.indexOf('*');
+
+            for(i in tempExprStack){ 
+                if(tempExprStack[i] === '*') {
+                    iOperator = i;
+                    break;
+                }
+            }
+        }
+        else if(tempExprStack.includes('/')) {
+            iOperator = tempExprStack.indexOf('/');
+
+            for(i in tempExprStack){
+                if(tempExprStack[i] === '/'){
+                    iOperator = i;
+                    break;
+                }
+            }
+    
+        }
+        else if(tempExprStack.includes('-')) {
+            iOperator = tempExprStack.indexOf('-');
+
+            for(i in tempExprStack){
+                if(tempExprStack[i] === '-') {
+                    iOperator = i;
+                    break;
+                }
+            }
+    
+        }
+        else if(tempExprStack.includes('+')) {
+            iOperator = tempExprStack.indexOf('+');
+
+            for(i in tempExprStack){
+                if(tempExprStack[i] === '+') {
+                    iOperator = i;
+                    break;
+                }
+            }    
+        }
 
         return iOperator ? iOperator : null;  //If an operator is found, return it. Otherwise return null
     }
-    while(exprStack.length > 1) {  //While the expression is not resovled...
 
-        let iCurrentOperator = getIndexOfOperator(exprStack);
+    while(tempExprStack.length > 1) {  //While the expression is not resovled...
+
+        let iCurrentOperator = getIndexOfOperator(tempExprStack);
 
         if(iCurrentOperator){
-            let iSecOperator = getIndexOfOperator( exprStack, exprStack[iCurrentOperator] ) //Find the next operator, by ommiting the current one.
+            let iSecOperator = getIndexOfOperator( tempExprStack, tempExprStack[iCurrentOperator] ) //Find the next operator, by ommiting the current one.
 
-            let expression = exprStack.splice( iCurrentOperator-1 , 3);    //separate 2 numbers and an operator for calculation AND remove them from the stack
+            let expression = tempExprStack.slice( iCurrentOperator-1 , iCurrentOperator+2 );    //separate 2 numbers and an operator for calculation AND remove them from the stack
             let result = 0;
-            switch( expression[iCurrentOperator] ) {
+
+            switch( expression[1] ) { //Calcualtion of equation
                 case '**':
                     result = pow(expression[0], expression[2]);
                     break;
@@ -57,15 +110,14 @@ const handleExpression = (exprStack) => {
                     break;    
                     
             }
-
-            exprStack = [
-                ...exprStack.slice(0, iCurrentOperator),
-                result,                           
-                ...exprStack.slice(iSecOperator)
-            ]
+                                                                
+            tempExprStack.splice(
+                iCurrentOperator-1, 3, //The equation calculated
+                result
+            )
         }
     }
-    return exprStack;
+    return tempExprStack;
 }
 
 const calculate = (exprStack) => {
@@ -99,3 +151,4 @@ const init = () =>{
     } while(userInput !== '=')
     console.log(`${exprStack} = ${calculate([...exprStack])}`);
 }
+
