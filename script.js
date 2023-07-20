@@ -24,11 +24,8 @@ const handleExpression = (exprStack) => {
         if(ommitOperator){
             tempExprStack.includes(ommitOperator) ? tempExprStack.splice(tempExprStack.indexOf(ommitOperator), 1) : console.warn(`There is no such operator as: ${ommitOperator}`);
         }
-
         //Look for the highest operator
         if(tempExprStack.includes('**')) {
-            iOperator = tempExprStack.indexOf('**');
-
             for(i in tempExprStack){ //Use for in on array to get the index, look for the Current operator in the highest
                 if(tempExprStack[i] === '**') {
                     iOperator = i;
@@ -37,8 +34,6 @@ const handleExpression = (exprStack) => {
             }
         }
         else if(tempExprStack.includes('*')) {
-            iOperator = tempExprStack.indexOf('*');
-
             for(i in tempExprStack){ 
                 if(tempExprStack[i] === '*') {
                     iOperator = i;
@@ -47,8 +42,6 @@ const handleExpression = (exprStack) => {
             }
         }
         else if(tempExprStack.includes('/')) {
-            iOperator = tempExprStack.indexOf('/');
-
             for(i in tempExprStack){
                 if(tempExprStack[i] === '/'){
                     iOperator = i;
@@ -58,8 +51,6 @@ const handleExpression = (exprStack) => {
     
         }
         else if(tempExprStack.includes('-')) {
-            iOperator = tempExprStack.indexOf('-');
-
             for(i in tempExprStack){
                 if(tempExprStack[i] === '-') {
                     iOperator = i;
@@ -69,8 +60,6 @@ const handleExpression = (exprStack) => {
     
         }
         else if(tempExprStack.includes('+')) {
-            iOperator = tempExprStack.indexOf('+');
-
             for(i in tempExprStack){
                 if(tempExprStack[i] === '+') {
                     iOperator = i;
@@ -79,7 +68,7 @@ const handleExpression = (exprStack) => {
             }    
         }
 
-        return iOperator ? iOperator : null;  //If an operator is found, return it. Otherwise return null
+        return iOperator ? parseInt(iOperator) : null;  //If an operator is found, return it. Otherwise return null
     }
 
     while(tempExprStack.length > 1) {  //While the expression is not resovled...
@@ -122,19 +111,28 @@ const handleExpression = (exprStack) => {
 
 const calculate = (exprStack) => {
     let iOpenBracket;
-
+    let iClosingBracket;
     //Handle Brackets
-    iOpenBracket = exprStack.indexOf('(');
-    if(iOpenBracket !== -1){
-        let iClosingBracket = exprStack.indexOf(')');
-        let bracketsExpr = exprStack.slice( iOpenBracket, iClosingBracket +1 ); //bracketsExpr comes with the breckets included
 
-        exprStack = [
-            ...exprStack.slice(0, iOpenBracket),
-            calculate( bracketsExpr.slice(1) ), //slice out the brackets, checks for child brackets inside
-            ...exprStack.slice(iClosingBracket)
-        ]
-        calculate(exprStack); //To check for more brackets in original expression.
+    //Look for parentheses
+    if(exprStack.includes('(')) {
+        for(i in exprStack){ //Use for in on array to get the index, look for the Current operator in the highest
+            if(exprStack[i] === '(') {
+                iOpenBracket = parseInt(i);
+                break;
+            }
+        }
+        for(i in exprStack){ //Use for in on array to get the index, look for the Current operator in the highest
+            if(exprStack[i] === ')') {
+                iClosingBracket = parseInt(i);
+                break;
+            }
+        }
+        let bracketsExpr = exprStack.slice( iOpenBracket, iClosingBracket +1 ); //bracketsExpr comes with the breckets included
+        exprStack.splice( iOpenBracket, bracketsExpr.length, 
+            ...handleExpression(bracketsExpr.slice(1, -1)) // Calculate the bracket expression first, as a regular one
+        );
+        calculate(exprStack); //Look for editional brackets
     }
 
     return handleExpression(exprStack); // Handle a no-bracket expression.
