@@ -1,3 +1,28 @@
+@font-face {
+    font-family: "DS-digital";
+    src: url('fonts/DS-DIGI.TTF') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: "DS-digital";
+    src: url('fonts/DS-DIGIB.TTF') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family: "DS-digital";
+    src: url('fonts/DS-DIGII.TTF') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+@font-face {
+    font-family: "DS-digital";
+    src: url('fonts/DS-DIGIT.TTF') format('truetype');
+    font-weight: bold;
+    font-style: italic;
+}
+
 body{
     margin: 0;
     padding: 0;
@@ -47,9 +72,11 @@ ul{
     height: 110px;
     border-radius: 5px;
     color: greenyellow;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'DS-digital', 'sans-serif';
+    font-size: 1.5em;
     display: flex;
     justify-content: flex-end;
+    align-items: center;
     padding: 0 20px;
     
 }
