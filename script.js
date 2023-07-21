@@ -1,3 +1,5 @@
+let exprStack = [];
+
 const add = (a,b) => parseFloat(a) + parseFloat(b);
 const subtract = (a,b) => parseFloat(a) - parseFloat(b);
 const divide = (a,b) => parseFloat(a) / parseFloat(b);
@@ -138,15 +140,68 @@ const calculate = (exprStack) => {
     return handleExpression(exprStack); // Handle a no-bracket expression.
 }
 
-const init = () =>{
-    let exprStack = [];
-    let userInput = '';
+const updateDisplay = (addition) => {
+    let display = document.querySelector('.display p');
 
-    do{
-        userInput = getUserInput();
-        if(userInput !== '=') exprStack.push(userInput);
-        //display calculation...
-    } while(userInput !== '=')
-    console.log(`${exprStack} = ${calculate([...exprStack])}`);
+    display.innerText = '';
+    for(e of exprStack) display.innerText += e;
+    if(addition) display.innerText += addition;
 }
+
+const initButtons = () => {
+    const btnList = document.querySelectorAll('.button');
+    let strNumber = '';
+    btnList.forEach((b) => {
+        b.addEventListener('click', () => {
+            if(!b.id) {
+                strNumber += b.innerText; //To be able to push multiple digit numbers
+                updateDisplay(strNumber); //Add each number to display
+            }
+            else {
+                if(strNumber) exprStack.push(strNumber);  //Add the complete number to stack when an operator is required
+                strNumber = '';
+                switch (b.id){
+                    case 'pow':
+                        exprStack.push('**');
+                        break;
+                    case 'multiply':
+                        exprStack.push('*');
+                        break;
+                    case 'divide':
+                        exprStack.push('/')
+                        break;
+                    case 'openBracket':
+                        exprStack.push('(');
+                        break;
+                    case 'closeBracket':
+                        exprStack.push(')');
+                        break;
+                    case 'add':
+                        exprStack.push('+');
+                        break;
+                    case 'subtract':
+                        exprStack.push('-');
+                        break;
+                    case 'clear':
+                        exprStack = [];
+                        updateDisplay()
+                        break;
+                    case 'backspace':
+                        exprStack.pop();
+                        break;
+                    case 'equals':
+                        exprStack = [...calculate(exprStack)];
+                        break;
+                }
+                updateDisplay();
+            }
+        })
+    })
+}
+
+const init = () =>{
+    initButtons();
+}
+
+init();
 
