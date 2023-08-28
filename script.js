@@ -114,26 +114,40 @@ const calculate = (exprStack) => {
 
     //Look for parentheses
     if(exprStack.includes('(')) {
-        for(i in exprStack){ //Use for in on array to get the index, look for the Current operator in the highest
+        exprStack.forEach( (value, i) => { // Check for missing duplication
+            if(value === '('){
+                if(i > 0 && exprStack[ i-1 ] !== '*') {
+                    exprStack = [...exprStack.slice(0, i), '*', ...exprStack.slice(i)] // Add duplication
+                }
+            }
+        })
+        if(isBracketOpen){ // Auto close an open bracket
+            exprStack.push(')');
+            isBracketOpen = false;
+        }
+
+        exprStack.forEach( (value, i) => { // Find the inner most set
             if(exprStack[i] === '(') {
-                iOpenBracket = parseInt(i);
-                break;
+                iOpenBracket = i;
             }
-        }
-        for(i in exprStack){ //Use for in on array to get the index, look for the Current operator in the highest
             if(exprStack[i] === ')') {
-                iClosingBracket = parseInt(i);
-                break;
+                iClosingBracket = i;
             }
-        }
+        })
+
         let bracketsExpr = exprStack.slice( iOpenBracket, iClosingBracket +1 ); //bracketsExpr comes with the breckets included
         exprStack.splice( iOpenBracket, bracketsExpr.length, 
             ...handleExpression(bracketsExpr.slice(1, -1)) // Calculate the bracket expression first, as a regular one
         );
-        calculate(exprStack); //Look for editional brackets
+        calculate(exprStack); //Look for additional brackets
     }
 
     return handleExpression(exprStack); // Handle a no-bracket expression.
+}
+
+const resetStack = () => { 
+    exprStack = []; 
+    isBracketOpen = false; 
 }
 
 const updateDisplay = (addition) => {
@@ -146,6 +160,7 @@ const updateDisplay = (addition) => {
 
 const initButtons = () => {
     const btnList = document.querySelectorAll('.button');
+    
     let strNumber = '';
     btnList.forEach((b) => {
         b.addEventListener('click', () => {
@@ -184,7 +199,7 @@ const initButtons = () => {
                         exprStack.push('-');
                         break;
                     case 'clear':
-                        exprStack = [];
+                        resetStack();
                         updateDisplay()
                         break;
                     case 'backspace':
@@ -194,7 +209,9 @@ const initButtons = () => {
                         break;
                     case 'equals':
                         exprStack = [...calculate(exprStack)];
-                        break;
+                        updateDisplay();
+                        resetStack();
+                        return;
                 }
                 updateDisplay();
             }
