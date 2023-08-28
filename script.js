@@ -1,4 +1,6 @@
 let exprStack = [];
+let isBracketOpen = false; // Bracket expression state
+
 
 const add = (a,b) => parseFloat(a) + parseFloat(b);
 const subtract = (a,b) => parseFloat(a) - parseFloat(b);
@@ -165,12 +167,16 @@ const initButtons = () => {
                     case 'divide':
                         exprStack.push('/')
                         break;
-                    case 'openBracket':
-                        exprStack.push('(');
-                        break;
-                    case 'closeBracket':
-                        exprStack.push(')');
-                        break;
+                    case 'bracket':
+                        if(!isBracketOpen){
+                            exprStack.push('(');
+                            isBracketOpen = true;
+                            break;
+                        } else {
+                            exprStack.push(')')
+                            isBracketOpen = false;
+                            break;
+                        }
                     case 'add':
                         exprStack.push('+');
                         break;
@@ -182,7 +188,9 @@ const initButtons = () => {
                         updateDisplay()
                         break;
                     case 'backspace':
-                        exprStack.pop();
+                        value = exprStack.pop();
+                        if(value === ')') isBracketOpen = true;
+                        if(value === '(') isBracketOpen = false;
                         break;
                     case 'equals':
                         exprStack = [...calculate(exprStack)];
