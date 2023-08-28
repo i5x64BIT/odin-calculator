@@ -13,9 +13,6 @@ const isInputValid = (input) => {
     }
     else return true;
 }
-const getUserInput = ()=> {
-    return prompt("Type a number or operator");
-}
 
 const handleExpression = (exprStack) => {
     let tempExprStack = [...exprStack];
@@ -78,8 +75,6 @@ const handleExpression = (exprStack) => {
         let iCurrentOperator = getIndexOfOperator(tempExprStack);
 
         if(iCurrentOperator){
-            let iSecOperator = getIndexOfOperator( tempExprStack, tempExprStack[iCurrentOperator] ) //Find the next operator, by ommiting the current one.
-
             let expression = tempExprStack.slice( iCurrentOperator-1 , iCurrentOperator+2 );    //separate 2 numbers and an operator for calculation AND remove them from the stack
             let result = 0;
 
@@ -114,7 +109,6 @@ const handleExpression = (exprStack) => {
 const calculate = (exprStack) => {
     let iOpenBracket;
     let iClosingBracket;
-    //Handle Brackets
 
     //Look for parentheses
     if(exprStack.includes('(')) {
@@ -160,6 +154,7 @@ const initButtons = () => {
             else {
                 if(strNumber) exprStack.push(strNumber);  //Add the complete number to stack when an operator is required
                 strNumber = '';
+
                 switch (b.id){
                     case 'pow':
                         exprStack.push('**');
